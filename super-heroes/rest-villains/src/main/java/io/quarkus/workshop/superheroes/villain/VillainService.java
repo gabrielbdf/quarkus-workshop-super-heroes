@@ -56,7 +56,8 @@ public class VillainService {
 
     public void deleteVillain(Long id) {
         Villain villain = Villain.findById(id);
-        villain.delete();
+        if (villain != null)
+            villain.delete();
     }
 
 }

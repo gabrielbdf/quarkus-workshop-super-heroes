@@ -118,14 +118,14 @@ public class VillainResourceTest {
         villain.level = DEFAULT_LEVEL;
 
         String location = given()
-            .body(villain)
-            .header(CONTENT_TYPE, JSON)
-            .header(ACCEPT, JSON)
-            .when()
-            .post("/api/villains")
-            .then()
-            .statusCode(CREATED.getStatusCode())
-            .extract().header("Location");
+                .body(villain)
+                .header(CONTENT_TYPE, JSON)
+                .header(ACCEPT, JSON)
+                .when()
+                .post("/api/villains")
+                .then()
+                .statusCode(CREATED.getStatusCode())
+                .extract().header("Location");
         assertTrue(location.contains("/api/villains"));
 
         // Stores the id
@@ -134,21 +134,21 @@ public class VillainResourceTest {
         assertNotNull(villainId);
 
         given()
-            .pathParam("id", villainId)
-            .when().get("/api/villains/{id}")
-            .then()
-            .statusCode(OK.getStatusCode())
-            .contentType(APPLICATION_JSON)
-            .body("name", Is.is(DEFAULT_NAME))
-            .body("otherName", Is.is(DEFAULT_OTHER_NAME))
-            .body("level", Is.is(DEFAULT_LEVEL))
-            .body("picture", Is.is(DEFAULT_PICTURE))
-            .body("powers", Is.is(DEFAULT_POWERS));
+                .pathParam("id", villainId)
+                .when().get("/api/villains/{id}")
+                .then()
+                .statusCode(OK.getStatusCode())
+                .contentType(APPLICATION_JSON)
+                .body("name", Is.is(DEFAULT_NAME))
+                .body("otherName", Is.is(DEFAULT_OTHER_NAME))
+                .body("level", Is.is(DEFAULT_LEVEL))
+                .body("picture", Is.is(DEFAULT_PICTURE))
+                .body("powers", Is.is(DEFAULT_POWERS));
 
         List<Villain> villains = get("/api/villains").then()
-            .statusCode(OK.getStatusCode())
-            .contentType(APPLICATION_JSON)
-            .extract().body().as(getVillainTypeRef());
+                .statusCode(OK.getStatusCode())
+                .contentType(APPLICATION_JSON)
+                .extract().body().as(getVillainTypeRef());
         assertEquals(NB_VILLAINS + 1, villains.size());
     }
 
@@ -164,24 +164,24 @@ public class VillainResourceTest {
         villain.level = UPDATED_LEVEL;
 
         given()
-            .body(villain)
-            .header(CONTENT_TYPE, JSON)
-            .header(ACCEPT, JSON)
-            .when()
-            .put("/api/villains")
-            .then()
-            .statusCode(OK.getStatusCode())
-            .contentType(APPLICATION_JSON)
-            .body("name", Is.is(UPDATED_NAME))
-            .body("otherName", Is.is(UPDATED_OTHER_NAME))
-            .body("level", Is.is(UPDATED_LEVEL))
-            .body("picture", Is.is(UPDATED_PICTURE))
-            .body("powers", Is.is(UPDATED_POWERS));
+                .body(villain)
+                .header(CONTENT_TYPE, JSON)
+                .header(ACCEPT, JSON)
+                .when()
+                .put("/api/villains")
+                .then()
+                .statusCode(OK.getStatusCode())
+                .contentType(APPLICATION_JSON)
+                .body("name", Is.is(UPDATED_NAME))
+                .body("otherName", Is.is(UPDATED_OTHER_NAME))
+                .body("level", Is.is(UPDATED_LEVEL))
+                .body("picture", Is.is(UPDATED_PICTURE))
+                .body("powers", Is.is(UPDATED_POWERS));
 
         List<Villain> villains = get("/api/villains").then()
-            .statusCode(OK.getStatusCode())
-            .contentType(APPLICATION_JSON)
-            .extract().body().as(getVillainTypeRef());
+                .statusCode(OK.getStatusCode())
+                .contentType(APPLICATION_JSON)
+                .extract().body().as(getVillainTypeRef());
         assertEquals(NB_VILLAINS + 1, villains.size());
     }
 
@@ -189,16 +189,25 @@ public class VillainResourceTest {
     @Order(4)
     void shouldRemoveAnItem() {
         given()
-            .pathParam("id", villainId)
-            .when().delete("/api/villains/{id}")
-            .then()
-            .statusCode(NO_CONTENT.getStatusCode());
+                .pathParam("id", villainId)
+                .when().delete("/api/villains/{id}")
+                .then()
+                .statusCode(NO_CONTENT.getStatusCode());
 
         List<Villain> villains = get("/api/villains").then()
-            .statusCode(OK.getStatusCode())
-            .contentType(APPLICATION_JSON)
-            .extract().body().as(getVillainTypeRef());
+                .statusCode(OK.getStatusCode())
+                .contentType(APPLICATION_JSON)
+                .extract().body().as(getVillainTypeRef());
         assertEquals(NB_VILLAINS, villains.size());
+    }
+
+    @Test
+    void shouldPingOpenAPI() {
+        given()
+                .header(ACCEPT, JSON)
+                .when().get("/q/openapi")
+                .then()
+                .statusCode(OK.getStatusCode());
     }
 
     private TypeRef<List<Villain>> getVillainTypeRef() {
