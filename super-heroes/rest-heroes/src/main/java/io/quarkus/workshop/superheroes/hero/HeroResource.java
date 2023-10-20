@@ -39,6 +39,7 @@ public class HeroResource {
     @GET
     @Path("/random")
     @APIResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Hero.class, required = true)))
+    @Produces(MediaType.APPLICATION_JSON)
     public Uni<RestResponse<Hero>> getRandomHero() {
         return Hero.findRandom()
                 .onItem().ifNotNull().transform(h -> {
@@ -50,6 +51,7 @@ public class HeroResource {
     @Operation(summary = "Returns all the heroes from the database")
     @GET
     @APIResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Hero.class, type = SchemaType.ARRAY)))
+    @Produces(MediaType.APPLICATION_JSON)
     public Uni<List<Hero>> getAllHeroes() {
         return Hero.listAll();
     }
@@ -59,6 +61,7 @@ public class HeroResource {
     @Path("/{id}")
     @APIResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Hero.class)))
     @APIResponse(responseCode = "204", description = "The hero is not found for a given identifier")
+    @Produces(MediaType.APPLICATION_JSON)
     public Uni<RestResponse<Hero>> getHero(@RestPath Long id) {
         return Hero.<Hero>findById(id)
                 .map(hero -> {
@@ -76,6 +79,7 @@ public class HeroResource {
     @POST
     @APIResponse(responseCode = "201", description = "The URI of the created hero", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = URI.class)))
     @WithTransaction
+    @Produces(MediaType.APPLICATION_JSON)
     public Uni<RestResponse<URI>> createHero(@Valid Hero hero, @Context UriInfo uriInfo) {
         return hero.<Hero>persist()
                 .map(h -> {
@@ -89,6 +93,7 @@ public class HeroResource {
     @PUT
     @APIResponse(responseCode = "200", description = "The updated hero", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Hero.class)))
     @WithTransaction
+    @Produces(MediaType.APPLICATION_JSON)
     public Uni<Hero> updateHero(@Valid Hero hero) {
         return Hero.<Hero>findById(hero.id)
                 .map(retrieved -> {
@@ -110,6 +115,7 @@ public class HeroResource {
     @Path("/{id}")
     @APIResponse(responseCode = "204")
     @WithTransaction
+    @Produces(MediaType.APPLICATION_JSON)
     public Uni<RestResponse<Void>> deleteHero(@RestPath Long id) {
         return Hero
                 .deleteById(id)
@@ -119,7 +125,8 @@ public class HeroResource {
 
     @GET
     @Produces(MediaType.TEXT_PLAIN)
+    @Path("/hello")
     public String hello() {
-        return "Hello from RESTEasy Reactive";
+        return "Hello Hero Resource";
     }
 }
