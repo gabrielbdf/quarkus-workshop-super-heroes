@@ -1,31 +1,53 @@
 package io.quarkus.workshop.superheroes.fight;
 
-import io.quarkus.test.junit.QuarkusTest;
-import io.quarkus.workshop.superheroes.fight.client.Hero;
-import io.quarkus.workshop.superheroes.fight.client.Villain;
-import io.restassured.common.mapper.TypeRef;
-import org.hamcrest.core.Is;
-import org.junit.jupiter.api.MethodOrderer;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
-
-import java.util.List;
-
-import java.util.Random;
 import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static jakarta.ws.rs.core.HttpHeaders.ACCEPT;
 import static jakarta.ws.rs.core.HttpHeaders.CONTENT_TYPE;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
-import static jakarta.ws.rs.core.Response.Status.*;
-import static org.hamcrest.CoreMatchers.*;
+import static jakarta.ws.rs.core.Response.Status.BAD_REQUEST;
+import static jakarta.ws.rs.core.Response.Status.NO_CONTENT;
+import static jakarta.ws.rs.core.Response.Status.OK;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.util.List;
+import java.util.Random;
+
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.hamcrest.core.Is;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.mockito.Mockito;
+
+import io.quarkus.test.InjectMock;
+import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.workshop.superheroes.fight.client.DefaultTestHero;
+import io.quarkus.workshop.superheroes.fight.client.DefaultTestVillain;
+import io.quarkus.workshop.superheroes.fight.client.Hero;
+import io.quarkus.workshop.superheroes.fight.client.HeroProxy;
+import io.quarkus.workshop.superheroes.fight.client.Villain;
+import io.quarkus.workshop.superheroes.fight.client.VillainProxy;
+import io.restassured.common.mapper.TypeRef;
+import jakarta.ws.rs.core.MediaType;
 
 @QuarkusTest
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class FightResourceTest {
+
+    @InjectMock
+    @RestClient
+    HeroProxy heroProxy;
+
+    @InjectMock
+    @RestClient
+    VillainProxy villainProxy;
 
     private static final String DEFAULT_WINNER_NAME = "Super Baguette";
     private static final String DEFAULT_WINNER_PICTURE = "super_baguette.png";
@@ -38,6 +60,12 @@ public class FightResourceTest {
 
     private static final int NB_FIGHTS = 3;
     private static String fightId;
+
+    @BeforeEach
+    public void setup() {
+        Mockito.when(heroProxy.findRandomHero()).thenReturn(DefaultTestHero.INSTANCE);
+        Mockito.when(villainProxy.findRandomVillain()).thenReturn(DefaultTestVillain.INSTANCE);
+    }
 
     @Test
     void shouldPingOpenAPI() {
@@ -68,6 +96,30 @@ public class FightResourceTest {
     }
 
     @Test
+    void shouldFindRandomFighthers() {
+        Fighters fighters = get("/api/fights/randomfighters")
+                .then()
+                .statusCode(OK.getStatusCode())
+                .contentType(
+                        MediaType.APPLICATION_JSON)
+                .extract()
+                .as(getFightersTypeRef());
+
+        Hero hero = fighters.hero;
+        assertEquals(hero.name, DefaultTestHero.DEFAULT_HERO_NAME);
+        assertEquals(hero.picture, DefaultTestHero.DEFAULT_HERO_PICTURE);
+        assertEquals(hero.level, DefaultTestHero.DEFAULT_HERO_LEVEL);
+        assertEquals(hero.powers, DefaultTestHero.DEFAULT_HERO_POWERS);
+
+        Villain villain = fighters.villain;
+        assertEquals(villain.name, DefaultTestVillain.DEFAULT_VILLAIN_NAME);
+        assertEquals(villain.picture, DefaultTestVillain.DEFAULT_VILLAIN_PICTURE);
+        assertEquals(villain.level, DefaultTestVillain.DEFAULT_VILLAIN_LEVEL);
+        assertEquals(villain.powers, DefaultTestVillain.DEFAULT_VILLAIN_POWERS); 
+
+    }
+
+    @Test
     void shouldNotAddInvalidItem() {
         Fighters fighters = new Fighters();
         fighters.hero = null;
@@ -86,9 +138,12 @@ public class FightResourceTest {
     @Test
     @Order(1)
     void shouldGetInitialItems() {
-        List<Fight> fights = get("/api/fights").then()
+        List<Fight> fights = get("/api/fights")
+                .then()
                 .statusCode(OK.getStatusCode())
-                .extract().body().as(getFightTypeRef());
+                .extract()
+                .body()
+                .as(getFightTypeRef());
         assertEquals(NB_FIGHTS, fights.size());
     }
 
@@ -146,6 +201,12 @@ public class FightResourceTest {
 
     private TypeRef<List<Fight>> getFightTypeRef() {
         return new TypeRef<List<Fight>>() {
+            // Kept empty on purpose
+        };
+    }
+
+    private TypeRef<Fighters> getFightersTypeRef() {
+        return new TypeRef<Fighters>() {
             // Kept empty on purpose
         };
     }
