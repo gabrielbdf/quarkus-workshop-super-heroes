@@ -3,7 +3,6 @@ package io.quarkus.workshop.superheroes.fight;
 import java.util.List;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.enums.SchemaType;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
@@ -49,12 +48,11 @@ public class FightResource {
     @Path("/randomfighters")
     @Produces(MediaType.APPLICATION_JSON)
     @APIResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Fighters.class)))
-    @Timeout(500)
     public Response getRandomFighters() {
         veryLongProcess();
         Fighters fighters = service.findRandomFighters();
         logger.debug("Get random fighters " + fighters);
-        return Response.ok(fighters).build();
+        return Response.ok(fighters).build(); 
     }
 
     @Operation(description = "Select all fights")

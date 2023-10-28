@@ -1,7 +1,5 @@
 package io.quarkus.workshop.superheroes.fight.client;
 
-import javax.print.attribute.standard.Media;
-
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 
 import jakarta.ws.rs.GET;
