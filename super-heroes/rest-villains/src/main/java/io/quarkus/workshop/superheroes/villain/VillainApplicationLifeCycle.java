@@ -14,10 +14,9 @@ public class VillainApplicationLifeCycle {
     private static final Logger LOGGER = Logger.getLogger(VillainApplicationLifeCycle.class);
 
     void onStart(@Observes StartupEvent ev) {
-        LOGGER.info("\\______ \\ _____ _______|  | __ \\   \\ /   /|__| /  _  \\ ______ |__| ");
-        LOGGER.info("  |    |  \\__  \\_  __ \\  |/ /  \\   Y   / |  |/  /_\\  \\____ \\|  |  ");
-        LOGGER.info("  |    `   \\/ __ \\|  | \\/    <  \\     /  |  /    |    \\  |_> >  | ");
-        LOGGER.info("   /_______  (____  /__|  |__|_ \\  \\___/   |__\\____|__  /   __/|__| ");
+        LOGGER.info("\\\\    // ||");
+        LOGGER.info(" \\\\  //  ||");
+        LOGGER.info("  \\\\//   ||");
         LOGGER.info("The application VILLAIN is starting with profile: " + ConfigUtils.getProfiles());
     }
 

@@ -62,7 +62,7 @@ public class HeroResource {
     @APIResponse(responseCode = "200", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @Schema(implementation = Hero.class)))
     @APIResponse(responseCode = "204", description = "The hero is not found for a given identifier")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<RestResponse<Hero>> getHero(@RestPath Long id) {
+    public Uni<RestResponse<Hero>> getHero(@RestPath Long id) { 
         return Hero.<Hero>findById(id)
                 .map(hero -> {
                     if (hero != null) {
@@ -120,7 +120,7 @@ public class HeroResource {
         return Hero
                 .deleteById(id)
                 .invoke(() -> logger.debugf("Hero deleted with id %d", id))
-                .replaceWith(RestResponse.noContent());
+                .replaceWith(RestResponse.noContent()); 
     }
 
     @GET
