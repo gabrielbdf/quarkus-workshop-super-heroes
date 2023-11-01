@@ -10,6 +10,7 @@ import org.jboss.logging.Logger;
 
 import io.quarkus.workshop.superheroes.fight.client.Hero;
 import io.quarkus.workshop.superheroes.fight.client.HeroProxy;
+import io.quarkus.workshop.superheroes.fight.client.NarrationProxy;
 import io.quarkus.workshop.superheroes.fight.client.Villain;
 import io.quarkus.workshop.superheroes.fight.client.VillainProxy;
 import jakarta.enterprise.context.ApplicationScoped;
@@ -26,8 +27,12 @@ public class FightService {
 
     @RestClient
     HeroProxy heroProxy;
+
     @RestClient
     VillainProxy villainProxy;
+
+    @RestClient
+    NarrationProxy narrationProxy;
 
     private final Random random = new Random();
 
@@ -130,6 +135,10 @@ public class FightService {
         villain.powers = "Fallback villain powers";
         villain.level = 42;
         return villain;
+    }
+
+    public String narrateFight(Fight fight) {
+        return narrationProxy.narrate(fight);
     }
 
 }

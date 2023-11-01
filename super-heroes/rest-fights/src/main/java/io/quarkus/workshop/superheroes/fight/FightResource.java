@@ -52,7 +52,7 @@ public class FightResource {
         veryLongProcess();
         Fighters fighters = service.findRandomFighters();
         logger.debug("Get random fighters " + fighters);
-        return Response.ok(fighters).build(); 
+        return Response.ok(fighters).build();
     }
 
     @Operation(description = "Select all fights")
@@ -88,6 +88,16 @@ public class FightResource {
     @POST
     public Fight fight(@Valid Fighters fighters, UriInfo uriInfo) {
         return service.persistFight(fighters);
+    }
+
+    @POST
+    @Path("/narrate")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response narrateFight(@Valid Fight fight) {
+        logger.debug("Narrate the fight " + fight);
+        String narration = service.narrateFight(fight);
+        return Response.status(Response.Status.CREATED).entity(narration).build();
     }
 
     @GET
