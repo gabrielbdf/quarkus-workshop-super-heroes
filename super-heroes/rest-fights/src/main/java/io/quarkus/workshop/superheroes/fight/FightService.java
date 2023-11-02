@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Random;
 
 import org.eclipse.microprofile.faulttolerance.Fallback;
+import org.eclipse.microprofile.reactive.messaging.Channel;
+import org.eclipse.microprofile.reactive.messaging.Emitter;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.logging.Logger;
 
@@ -33,6 +35,9 @@ public class FightService {
 
     @RestClient
     NarrationProxy narrationProxy;
+
+    @Channel("fights")
+    Emitter<Fight> emmiter;
 
     private final Random random = new Random();
 
@@ -71,6 +76,8 @@ public class FightService {
 
         fight.fightDate = Instant.now();
         fight.persist();
+
+        emmiter.send(fight).toCompletableFuture().join();
 
         return fight;
     }
