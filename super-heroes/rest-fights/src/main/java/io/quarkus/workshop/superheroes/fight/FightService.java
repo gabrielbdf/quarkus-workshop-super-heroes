@@ -39,6 +39,7 @@ public class FightService {
     @Channel("fights")
     Emitter<Fight> emmiter;
 
+
     private final Random random = new Random();
 
     public List<Fight> findAllFights() {
