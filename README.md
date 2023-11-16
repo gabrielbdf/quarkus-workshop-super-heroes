@@ -1,1 +1,1 @@
-# quarkus-workshop-super-heroes
+# Quarkus - quarkus-workshop-super-heroes
